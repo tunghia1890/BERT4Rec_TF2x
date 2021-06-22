@@ -503,7 +503,7 @@ def main(_):
         print(bert_config.to_json_string())
         writer.write(bert_config.to_json_string() + '\n')
         for key in sorted(result.keys()):
-            print("  %s = %s", key, str(result[key]))
+            print("%s = %s" %(key, str(result[key])))
             writer.write("%s = %s\n" % (key, str(result[key])))
 
 
