@@ -44,6 +44,8 @@ max_seq_length = 128
 max_predictions_per_seq = 20
 use_pop_random = True
 
+is_training = True
+
 
 def gather_indexes(sequence_tensor, positions):
     """Gathers the vectors at the specific positions over a minibatch."""
@@ -182,7 +184,6 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
             print("  name = %s, shape = %s%s", var.name, var.shape,
                             init_string)
 
-        output_spec = None
         if mode == tf.estimator.ModeKeys.TRAIN:
             train_op = optimization.create_optimizer(total_loss, learning_rate,
                                                      num_train_steps,
@@ -206,11 +207,11 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
                                                     [-1])
                 masked_lm_ids = tf.reshape(masked_lm_ids, [-1])
                 masked_lm_weights = tf.reshape(masked_lm_weights, [-1])
-                masked_lm_accuracy = tf.metrics.accuracy(
+                masked_lm_accuracy = tf.compat.v1.metrics.accuracy(
                     labels=masked_lm_ids,
                     predictions=masked_lm_predictions,
                     weights=masked_lm_weights)
-                masked_lm_mean_loss = tf.metrics.mean(
+                masked_lm_mean_loss = tf.compat.v1.metrics.mean(
                     values=masked_lm_example_loss, weights=masked_lm_weights)
 
                 return {
@@ -469,15 +470,16 @@ def main(_):
             "batch_size": batch_size
         })
 
-    print("***** Running training *****")
-    print("  Batch size = %d", batch_size)
-    train_input_fn = input_fn_builder(
-        input_files=train_input_files,
-        max_seq_length=max_seq_length,
-        max_predictions_per_seq=max_predictions_per_seq,
-        is_training=True)
-    estimator.train(
-        input_fn=train_input_fn, max_steps=num_train_steps)
+    if is_training:
+        print("***** Running training *****")
+        print("  Batch size = %d", batch_size)
+        train_input_fn = input_fn_builder(
+            input_files=train_input_files,
+            max_seq_length=max_seq_length,
+            max_predictions_per_seq=max_predictions_per_seq,
+            is_training=True)
+        estimator.train(
+            input_fn=train_input_fn, max_steps=num_train_steps)
 
     print("***** Running evaluation *****")
     print("  Batch size = %d", batch_size)
