@@ -472,7 +472,7 @@ def main(_):
 
     if is_training:
         print("***** Running training *****")
-        print("  Batch size = %d", batch_size)
+        print("  Batch size = %d" % batch_size)
         train_input_fn = input_fn_builder(
             input_files=train_input_files,
             max_seq_length=max_seq_length,
@@ -482,7 +482,7 @@ def main(_):
             input_fn=train_input_fn, max_steps=num_train_steps)
 
     print("***** Running evaluation *****")
-    print("  Batch size = %d", batch_size)
+    print("  Batch size = %d" % batch_size)
 
     eval_input_fn = input_fn_builder(
         input_files=test_input_files,
@@ -503,7 +503,7 @@ def main(_):
         print(bert_config.to_json_string())
         writer.write(bert_config.to_json_string() + '\n')
         for key in sorted(result.keys()):
-            print("%s = %s" %(key, str(result[key])))
+            print("%s = %s" % (key, str(result[key])))
             writer.write("%s = %s\n" % (key, str(result[key])))
 
 
